@@ -2,3 +2,7 @@
 *.txt
 *.vtt
 *.webm
+
+# Keep mined study output tracked
+!vids/
+!vids/**/*.txt

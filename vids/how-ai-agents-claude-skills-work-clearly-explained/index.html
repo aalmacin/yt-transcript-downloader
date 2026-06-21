@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How AI Agents &amp; Claude Skills Work — Clearly Explained</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0f1115;
+    color: #e6e8ec;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .75rem; }
+  h2 { font-size: 1.3rem; margin: 2.25rem 0 .75rem; border-bottom: 1px solid #2a2e38; padding-bottom: .4rem; }
+  a { color: #ff7b7b; }
+  .watch {
+    display: inline-block; margin-bottom: 1.5rem; padding: .55rem 1rem;
+    background: #ff5252; color: #fff; text-decoration: none; border-radius: 6px;
+    font-weight: 600; font-size: .95rem;
+  }
+  .watch:hover { background: #e04343; }
+  .overview { color: #c9cdd6; }
+  ul { padding-left: 1.25rem; }
+  li { margin: .4rem 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .95rem; }
+  th, td { text-align: left; padding: .65rem .75rem; border-bottom: 1px solid #2a2e38; vertical-align: top; }
+  th { color: #ff7b7b; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  td:first-child { font-weight: 600; white-space: nowrap; width: 30%; }
+  .files { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+  .files a {
+    padding: .45rem .85rem; background: #1a1d24; border: 1px solid #2a2e38;
+    border-radius: 6px; text-decoration: none; color: #e6e8ec; font-size: .9rem;
+  }
+  .files a:hover { border-color: #ff5252; }
+  .muted { color: #9aa3b0; font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>How AI Agents &amp; Claude Skills Work — Clearly Explained</h1>
+  <a class="watch" href="https://www.youtube.com/watch?v=S_oN3vlzpMw" target="_blank" rel="noopener">▶ Watch on YouTube</a>
+
+  <h2>Overview</h2>
+  <p class="overview">
+    A conversational deep-dive (with lots of whiteboard diagrams) on how to actually get good
+    results out of modern AI coding agents. The core argument: the models are already
+    exceptionally good, so quality now comes from <em>context engineering</em>, not from piling on
+    configuration. The guest makes the case for keeping <code>AGENTS.md</code>/<code>CLAUDE.md</code>
+    files minimal, leaning instead on <strong>skills</strong> — small instruction files loaded via
+    progressive disclosure — and building those skills by walking the agent through a real workflow
+    until a successful run can be codified. It closes on managing the context window, treating agents
+    like new employees, and scaling up to sub-agents only once core workflows exist.
+  </p>
+
+  <h2>Key takeaways</h2>
+  <ul>
+    <li>Models are good now; <strong>context and the harness</strong> are what separate quality from slop.</li>
+    <li>~95% of people don't need an <code>AGENTS.md</code>/<code>CLAUDE.md</code> — it's injected every turn and burns tokens. Reserve it for proprietary, always-relevant info.</li>
+    <li><strong>Skills use progressive disclosure</strong>: only the name + description sit in context (e.g. 53 tokens) until the agent decides it needs the full body (e.g. 944 tokens).</li>
+    <li>Don't write or download skills blindly — <strong>walk the agent through the workflow step-by-step</strong>, get a successful run, then have it codify that run into a skill.</li>
+    <li><strong>Recursively build skills</strong>: when the agent fails, ask for the error, fix it, then have it update the skill so the failure can't recur.</li>
+    <li>LLMs don't think — they predict tokens. Treat them like <strong>new employees</strong>, not all-knowing boxes.</li>
+    <li>Keep the context window lean (aim well under ~70–80%); models get "dumb" as it fills, and it costs more.</li>
+    <li><strong>Code itself is context</strong> — a solid template or codebase removes the need to restate your stack.</li>
+    <li>Scale for productivity, not for show: start with one agent, add sub-agents only when a real workflow justifies them.</li>
+    <li>Downloaded third-party skills are an attack vector and usually lack the context of a successful run.</li>
+  </ul>
+
+  <h2>Key Concepts</h2>
+  <table>
+    <thead><tr><th>Concept</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td>Skills (agent skills)</td><td>Reusable instruction files (skill.md) holding a name, description, and detailed steps for a specific workflow. The agent loads only the name and description until it decides the skill is needed, then reads the full content.</td></tr>
+      <tr><td>Progressive disclosure</td><td>A design pattern where only a skill's name and description are kept in context; the full body is loaded only when the agent determines it needs that skill, saving tokens.</td></tr>
+      <tr><td>Context window</td><td>The bounded amount of information (system prompt, instructions, tools, codebase, conversation) a model can attend to at once, measured in tokens; performance degrades as it fills up.</td></tr>
+      <tr><td>Context (in agents)</td><td>The assembled information a model needs to execute an action — system prompt, instruction files, skills, tools, codebase, and conversation history.</td></tr>
+      <tr><td>AGENTS.md / CLAUDE.md</td><td>Project-level instruction files injected into context on every turn. Useful only for proprietary or always-relevant guidance; otherwise they waste tokens that a skill could carry on demand.</td></tr>
+      <tr><td>System prompt</td><td>The provider-supplied base instructions that guide how a model behaves — what to do and what not to do — present in every request.</td></tr>
+      <tr><td>Agent harness</td><td>The software scaffolding around a model that manages context assembly, exposes tools, and lets the model call them; the model itself does not call tools directly.</td></tr>
+      <tr><td>Recursively building skills</td><td>An iterative method: build a skill, run it, capture each failure, ask the agent for the error, fix it, then have the agent update the skill so the failure never recurs.</td></tr>
+      <tr><td>Building skills from successful runs</td><td>Rather than writing a skill upfront, walk the agent through the workflow step-by-step until a successful run exists, then have it codify that run into a skill so it has real context.</td></tr>
+      <tr><td>Tokens</td><td>The units of text models process and bill on; instruction files cost tokens on every turn, while progressively disclosed skills cost only their name and description until used.</td></tr>
+      <tr><td>Context rot / degradation</td><td>The tendency of a model to produce worse output as its context window fills (e.g. past ~70-80%); keeping context lean improves both cost and performance.</td></tr>
+      <tr><td>LLMs as token predictors</td><td>Large language models don't reason or understand; they map input to a vector space and predict the most probable next tokens, which only appears like thinking.</td></tr>
+      <tr><td>Sub-agents</td><td>Specialized agents managed by a main agent, each with its own skills and context for a domain (marketing, business, personal). Valuable only after core workflows exist.</td></tr>
+      <tr><td>Scaling for productivity vs for cool</td><td>The principle of starting with one capable agent and adding skills/sub-agents only when a real workflow justifies it, rather than spinning up many agents and skills upfront.</td></tr>
+      <tr><td>Vibe coding</td><td>Building software primarily by prompting AI agents to write the code, rather than hand-writing it — increasingly viable because models are strong at code generation.</td></tr>
+      <tr><td>Code as context</td><td>The idea that an existing codebase or template itself supplies the agent the conventions and stack info it needs, removing the need to restate them in instruction files.</td></tr>
+      <tr><td>Templates renaissance</td><td>The prediction that well-built starter templates regain value because a solid foundation becomes immediate, high-quality context for an agent to build upon.</td></tr>
+      <tr><td>Compaction</td><td>When a conversation approaches the context limit, tools like Claude Code or Codex summarize/compress earlier context to free space.</td></tr>
+      <tr><td>Skills marketplace risk</td><td>Downloadable third-party skills are both an attack vector (malicious instructions) and often low-quality, since they lack the context of a successful run for your workflow.</td></tr>
+      <tr><td>OpenClaude</td><td>An open agent setup the speaker runs with its own email and scheduled checks (e.g. every 15 minutes) to triage sponsor emails and run multi-source report workflows.</td></tr>
+      <tr><td>Permanent underclass</td><td>A speculative term for workers displaced once AGI arrives who lack AI/agent skills; the speakers push back on the 'permanent' framing as overstated.</td></tr>
+      <tr><td>TypeScript code generation</td><td>Model providers have optimized agents to be especially strong at writing TypeScript, underpinning code-writing agent products.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Files</h2>
+  <div class="files">
+    <a href="raw.txt">raw.txt</a>
+    <a href="transcript.txt">transcript.txt</a>
+    <a href="concepts-mined.csv">concepts-mined.csv</a>
+  </div>
+  <p class="muted">Source: <a href="https://www.youtube.com/watch?v=S_oN3vlzpMw" target="_blank" rel="noopener">youtube.com/watch?v=S_oN3vlzpMw</a></p>
+</div>
+</body>
+</html>
